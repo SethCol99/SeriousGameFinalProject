@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 
 public class Driver : MonoBehaviour
 {
@@ -9,11 +11,17 @@ public class Driver : MonoBehaviour
     public float horizontalSpeed = 3;
     public float speed = 1;
     public float peopleKilled = 0;
+
     public GameObject explosionPrefab;
+
     bool collided;
     bool timeUp;
+
     public int numExplosions;
-    float elapsedTime;
+
+    public Button resetButton;
+
+    public bool playerDead;
     
 
     // Start is called before the first frame update
@@ -21,8 +29,9 @@ public class Driver : MonoBehaviour
     {
         numExplosions = 0;
         collided = false;
-        elapsedTime = 0;
+        resetButton.gameObject.SetActive(false);
         timeUp = false;
+        playerDead = false;
     }
 
     // Update is called once per frame
@@ -41,6 +50,7 @@ public class Driver : MonoBehaviour
                 Destroy(GetComponent<SpriteRenderer>());
             }
             numExplosions++;
+            playerDead = true;
            
         }
         if (collided == true)
@@ -48,7 +58,15 @@ public class Driver : MonoBehaviour
             speed = 0;
            
         }
-        
+        if (playerDead)
+        {
+            resetButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            resetButton.gameObject.SetActive(false);
+        }
+
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -72,7 +90,13 @@ public class Driver : MonoBehaviour
             {     
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
+            playerDead = true;
             
+        }
+        else if (col.gameObject.CompareTag("Person"))
+        { 
+            peopleKilled++;
+                   
         }
     }
 
