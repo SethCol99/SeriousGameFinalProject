@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   horizontalSpeed: 6
-  speed: 4
+  speed: 6
   peopleKilled: 0
 --- !u!60 &5510866579211298655
 PolygonCollider2D:
