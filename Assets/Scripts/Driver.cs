@@ -9,19 +9,46 @@ public class Driver : MonoBehaviour
     public float horizontalSpeed = 3;
     public float speed = 1;
     public float peopleKilled = 0;
-
+    public GameObject explosionPrefab;
+    bool collided;
+    bool timeUp;
+    public int numExplosions;
+    float elapsedTime;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        numExplosions = 0;
+        collided = false;
+        elapsedTime = 0;
+        timeUp = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         transform.position += Vector3.right * Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime;
         transform.position += Vector3.up * speed * Time.deltaTime;
+        if (transform.position.x >= 5.5 || transform.position.x <= -5.5)
+        {
+            horizontalSpeed = 0;
+            speed = 0;
+            if (numExplosions == 0)
+            {
+                Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+                Destroy(GetComponent<SpriteRenderer>());
+            }
+            numExplosions++;
+           
+        }
+        if (collided == true)
+        {
+            speed = 0;
+           
+        }
+        
     }
 
     void OnCollisionEnter2D(Collision2D col)
@@ -31,14 +58,26 @@ public class Driver : MonoBehaviour
         if (col.gameObject.CompareTag("Enemy"))
         {
 
+
             // load the active scene again, to restard the game. The GameManager will handle this for us. We use a slight delay to see the explosion.
             //StartCoroutine(RestartTheGameAfterSeconds(1));
             // we can not destroy the spaceship since it needs to run the coroutine to restart the game.
             // instead, disable update (isDead = true) and remove the renderer to "hide" the object while we reload.
             //isDead = true;
+            collided = true;
             peopleKilled++;
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             Destroy(GetComponent<SpriteRenderer>());
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            if (timeUp)
+            {     
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+            
         }
+    }
+
+    void reloadScene()
+    {
+
     }
 }
