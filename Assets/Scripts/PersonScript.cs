@@ -27,7 +27,8 @@ public class PersonScript : MonoBehaviour
     { 
         if (col.gameObject.CompareTag("Driver"))
         {
-           Destroy(GetComponent<SpriteRenderer>());
+            //Destroy(GetComponent<SpriteRenderer>());
+            Destroy(gameObject);
         }
     }
 }

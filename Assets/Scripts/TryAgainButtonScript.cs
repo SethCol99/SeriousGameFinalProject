@@ -26,4 +26,9 @@ public class TryAgainButtonScript : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void quitGame()
+    {
+        Application.Quit();
+    }
 }

@@ -10,6 +10,7 @@ public class CameraScript : MonoBehaviour
     public float globalMaxY;
     public float globalMinX;
     public float globalMinY;
+    public Vector3 offset;
 
     void Start()
     {
@@ -21,7 +22,8 @@ public class CameraScript : MonoBehaviour
         Vector3 start = transform.position;
         Vector3 goal = target.position + new Vector3(0.0f, 0.0f, -10);
         float t = Time.deltaTime * speed;
-        Vector3 newPosition = Vector3.Lerp(start, goal, t);
+        Vector3 newPosition = Vector3.Lerp(start, goal + offset, t);
+        //Vector3 newPosition = goal;
         float maxX = globalMaxX - Camera.main.orthographicSize * Camera.main.aspect;
         float maxY = globalMaxY - Camera.main.orthographicSize;
         float minX = globalMinX + Camera.main.orthographicSize * Camera.main.aspect;
@@ -31,4 +33,8 @@ public class CameraScript : MonoBehaviour
         transform.position = newPosition;
     }
 
+    public float getMaxY()
+    {
+        return globalMaxY;
+    }
 }

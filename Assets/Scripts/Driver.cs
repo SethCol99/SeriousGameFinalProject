@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
+using TMPro;
 
 
 public class Driver : MonoBehaviour
@@ -10,28 +12,59 @@ public class Driver : MonoBehaviour
 
     public float horizontalSpeed = 3;
     public float speed = 1;
-    public float peopleKilled = 0;
+    public float peopleKilled = 0;  
 
-    public GameObject explosionPrefab;
+    public int numGens;
+    public int numExplosions;
+    public int dranks;
+    int upperSteeringLimit;
 
     bool collided;
     bool timeUp;
+    bool playerDead;
+    bool victory;
 
-    public int numExplosions;
-
+    public GameObject explosionPrefab;
+    public GameObject tombstone;
     public Button resetButton;
+    public GameObject victoryPanel;
+    public GameObject backgroundPanel;
+    public Button playAgainButton;
+    public Button quitButton;
 
-    public bool playerDead;
+    public CameraScript cam;
     
+    public TMP_Text peopleKilledText;
+    public TMP_Text finalMessage;
+
+    private String[] messages = new String[] {
+        "The cost of a taxi is always cheaper than a DUI",
+        "It’s illegal to drink and drive in every US state",
+        "30% of all traffic crash fatalities in the United States involve drunk drivers",
+        "32 people die due to drinking and driving every day in the United States",
+        "It only takes 2-3 drinks to reach the legal limit"
+    };
 
     // Start is called before the first frame update
     void Start()
     {
-        numExplosions = 0;
-        collided = false;
+        
         resetButton.gameObject.SetActive(false);
+        victoryPanel.gameObject.SetActive(false);
+        playAgainButton.gameObject.SetActive(false);
+        finalMessage.gameObject.SetActive(false);
+        quitButton.gameObject.SetActive(false);
+        backgroundPanel.gameObject.SetActive(false);
+
         timeUp = false;
         playerDead = false;
+        numGens = 0;
+        victory = false;
+        numExplosions = 0;
+        collided = false;
+
+
+        upperSteeringLimit = dranks * 3;
     }
 
     // Update is called once per frame
@@ -40,6 +73,11 @@ public class Driver : MonoBehaviour
         
         transform.position += Vector3.right * Input.GetAxis("Horizontal") * horizontalSpeed * Time.deltaTime;
         transform.position += Vector3.up * speed * Time.deltaTime;
+        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            randomHorizontalVelocity();
+        }
+        
         if (transform.position.x >= 5.5 || transform.position.x <= -5.5)
         {
             horizontalSpeed = 0;
@@ -56,7 +94,7 @@ public class Driver : MonoBehaviour
         if (collided == true)
         {
             speed = 0;
-           
+            horizontalSpeed = 0;
         }
         if (playerDead)
         {
@@ -67,8 +105,43 @@ public class Driver : MonoBehaviour
             resetButton.gameObject.SetActive(false);
         }
 
+        if (transform.position.y > cam.globalMaxY)
+        {
+            victory = true;
+            speed = 0;
+            horizontalSpeed = 0;
+
+        }
+
+        if (victory == true)
+        {
+            var rnd2 = new System.Random();
+
+            victoryPanel.gameObject.SetActive(true);
+            playAgainButton.gameObject.SetActive(true);
+            finalMessage.gameObject.SetActive(true);
+            quitButton.gameObject.SetActive(true);
+            backgroundPanel.gameObject.SetActive(true);
+
+            if (numGens == 0)
+            {
+                finalMessage.text = messages[rnd2.Next(0, 4)];
+            }
+            numGens++;
+
+            peopleKilledText.text = ((int)peopleKilled).ToString("D1");
+            
+
+        }
+
     }
 
+    void randomHorizontalVelocity()
+    {
+        var rnd = new System.Random();
+
+        horizontalSpeed = rnd.Next(1, upperSteeringLimit);
+    }
     void OnCollisionEnter2D(Collision2D col)
     {
 
@@ -96,12 +169,10 @@ public class Driver : MonoBehaviour
         else if (col.gameObject.CompareTag("Person"))
         { 
             peopleKilled++;
-                   
+            Instantiate(tombstone, transform.position, Quaternion.identity);
+
         }
     }
 
-    void reloadScene()
-    {
 
-    }
 }
